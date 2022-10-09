@@ -1,0 +1,24 @@
+{
+  "name": "comp4537-set_t-assignment-1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kylecheng27/COMP4537-Set_T-Assignment-1.git"
+  },
+  "author": "kyle",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kylecheng27/COMP4537-Set_T-Assignment-1/issues"
+  },
+  "homepage": "https://github.com/kylecheng27/COMP4537-Set_T-Assignment-1#readme",
+  "dependencies": {
+    "axios": "^1.1.2",
+    "express": "^4.18.2",
+    "mongoose": "^6.6.5"
+  }
+}
