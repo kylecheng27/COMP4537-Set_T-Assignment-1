@@ -20,7 +20,7 @@ const pokemonSchema = new Schema({
         "Special Attack": Number,
         "Special Defense": Number
     },
-    'id': Number,
+    'id': {type: Number, unique: true},
     'name': {
         'english': {type: String, maxLength: 20},
         'japanese': String,
@@ -73,16 +73,12 @@ async function getPokemonDocs() {
 // An async function returns a promise, access the promise to get the stuff
 // Within the promise, update Mongo Atlas db
 getPokemonDocs().then(([pokedex, pokemonType]) => {
-  // console.log(pokedex);
-  // console.log(pokemonType);
   
   // Fill cloud db
   pokemonModel.insertMany(pokedex, error => {
     console.log(error);
 });
-
 }, error => console.log(error));
-
 
 // Specify the API paths
 
@@ -130,4 +126,19 @@ app.delete('/api/assignment1/pokemons/:id', (req, res) => {
     });
   
     res.send("Deleted successfully?");
+});
+
+// Add a new pokemon
+app.use(express.json());
+app.post('/api/assignment1/pokemons', (req, res) => {
+  try {
+    pokemonModel.create(req.body, err => {
+      if (err) console.log(err);
+      // saved!
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({ msg: `Invalid pokemon!` });
+  }  
+    res.json(req.body);
 });
