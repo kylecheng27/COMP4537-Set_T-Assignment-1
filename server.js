@@ -154,3 +154,14 @@ app.patch('/api/assignment1/pokemons/:id', (req, res) => {
 
 res.send("Updated successfully!");
 });
+
+
+app.put('/api/assignment1/pokemons/:id', (req, res) => {
+  pokemonModel.replaceOne({id: req.params.id }, req.body, (err, res) => {
+    // Updated at most one doc, `res.nModified` contains the number
+    // of docs that MongoDB updated
+    if (err) console.log(err);
+    console.log(res);
+  });
+  res.send('Replacement successful!');
+})
