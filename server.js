@@ -121,9 +121,10 @@ app.get('/api/assignment1/pokemons/:id', (req, res) => {
 
 // Delete a pokemon
 app.delete('/api/assignment1/pokemons/:id', (req, res) => {
-  pokemonModel.deleteOne({ _id: mongoose.Types.ObjectId(req.params.id) }, (err, result) => {
+  pokemonModel.deleteOne({ id: req.params.id }, (err, result) => {
       if (err) {
         console.log(err);
+        res.json({ msg: `pokemon with id ${req.params.id} does not exist...` });
       }
       console.log(result);
     });
