@@ -83,6 +83,7 @@ getPokemonDocs().then(([pokedex, pokemonType]) => {
 // Specify the API paths
 
 // Get all the pokemons
+app.use(express.json());
 app.get('/api/assignment1/pokemons', (req, res) => {
   pokemonModel.find({}).skip(req.query.after).limit(req.query.count)
   .then(docs => {
@@ -129,7 +130,6 @@ app.delete('/api/assignment1/pokemons/:id', (req, res) => {
 });
 
 // Add a new pokemon
-app.use(express.json());
 app.post('/api/assignment1/pokemons', (req, res) => {
   try {
     pokemonModel.create(req.body, err => {
@@ -141,4 +141,16 @@ app.post('/api/assignment1/pokemons', (req, res) => {
     res.json({ msg: `Invalid pokemon!` });
   }  
     res.json(req.body);
+});
+
+// Modify a pokemon
+app.patch('/api/assignment1/pokemons/:id', (req, res) => {
+  pokemonModel.updateOne({ id: req.params.id }, req.body, (err, res) => {
+  // Updated at most one doc, `res.nModified` contains the number
+  // of docs that MongoDB updated
+  if (err) console.log(err);
+  console.log(res);
+});
+
+res.send("Updated successfully!");
 });
