@@ -88,7 +88,7 @@ getPokemonDocs().then(([pokedex, pokemonType]) => {
 
 // Get all the pokemons
 app.get('/api/assignment1/pokemons', (req, res) => {
-  pokemonModel.find({})
+  pokemonModel.find({}).skip(req.query.after).limit(req.query.count)
   .then(docs => {
       console.log(docs);
       res.json(docs);
@@ -99,16 +99,34 @@ app.get('/api/assignment1/pokemons', (req, res) => {
   });
 });
 
-// Get a pokemon
+// Get a pokemon based on id
 app.get('/api/assignment1/pokemons/:id', (req, res) => {
   console.log(req.params.id);
-  pokemonModel.find({ _id: mongoose.Types.ObjectId(`${req.params.id}`) })
+  pokemonModel.find({ id: req.params.id})
       .then(doc => {
+          
+        if (!doc.length) {
+          res.json({ msg: `pokemon with id ${req.params.id} does not exist...` });
+        } else {
           console.log(doc);
           res.json(doc);
+        }
+        
       })
       .catch(err => {
           console.error(err);
-          res.json({ msg: `fail to return pokemon with id ${req.params.id}...  Check with server devs` });
+          res.json({ msg: `db error...  Check with server devs` });
       });
+});
+
+// Delete a pokemon
+app.delete('/api/assignment1/pokemons/:id', (req, res) => {
+  pokemonModel.deleteOne({ _id: mongoose.Types.ObjectId(req.params.id) }, (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      console.log(result);
+    });
+  
+    res.send("Deleted successfully?");
 });
