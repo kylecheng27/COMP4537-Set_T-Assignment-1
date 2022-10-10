@@ -1,10 +1,63 @@
-**Title**
+**Pokedex API**
 ----
-  <_Additional information about your API call. Try to use verbs that match both request type (fetching vs modifying) and plurality (one vs multiple)._>
-
+This API is meant to simulate a Pokedex. It returns data in JSON format. Users can fetch one or multiple Pokemon. However, users can only modify or delete one Pokemon.
 * **URL**
 
-  <_The URL Structure (path only, no root url)_>
+  There is only one kind of GET request which fetches multiple Pokemon and its URL is below:  
+  /api/assignment1/pokemons
+
+  All other types of requests have the URL below 
+  /api/assignment1/pokemons/:id
+
+
+**GET multiple Pokemon**
+----
+
+* **Method:**
+
+  `GET`
+  
+*  **URL Params**
+
+   **Optional:**
+ 
+   `count=[integer]`
+   `after=[integer]`
+
+   Default request without params returns all Pokemons in Pokedex. Pokemons have id's starting from 1 onwards. The 'after' param omits the first numbers of pokemons as specified. The 'count' param limits the number of Pokemons returned.
+
+* **Data Params**
+
+  None
+
+* **Success Response:**
+  
+  * **Code:** 200 <br />
+    **Content (One Pokemon):** `{"base":{"HP":65,"Attack":80,"Defense":140,"Speed":70,"Special Attack":40,"Special Defense":70},"name":{"english":"Skarmory","japanese":"エアームド","chinese":"盔甲鸟","french":"Airmure"},"_id":"6343a130ecb0aec544c09f95","id":227,"type":["Steel","Flying"],"__v":0}`
+ 
+* **Error Response:**
+
+  <_Most endpoints will have many ways they can fail. From unauthorized access, to wrongful parameters etc. All of those should be liste d here. It might seem repetitive, but it helps prevent assumptions from being made where they should be._>
+
+  * **Code:** 401 UNAUTHORIZED <br />
+    **Content:** `{ error : "Log in" }`
+
+* **Sample Call:**
+
+  http://localhost:5000/api/assignment1/pokemons
+
+* **Notes:**
+
+  N/A
+
+
+
+
+
+
+
+**Title**
+----
 
 * **Method:**
   
@@ -29,11 +82,9 @@
   <_If making a post request, what should the body payload look like? URL Params rules apply here too._>
 
 * **Success Response:**
-  
-  <_What should the status code be on success and is there any returned data? This is useful when people need to to know what their callbacks should expect!_>
 
   * **Code:** 200 <br />
-    **Content:** `{ id : 12 }`
+    **Content (One Pokemon):** `{"base":{"HP":65,"Attack":80,"Defense":140,"Speed":70,"Special Attack":40,"Special Defense":70},"name":{"english":"Skarmory","japanese":"エアームド","chinese":"盔甲鸟","french":"Airmure"},"_id":"6343a130ecb0aec544c09f95","id":227,"type":["Steel","Flying"],"__v":0}`
  
 * **Error Response:**
 
@@ -41,11 +92,6 @@
 
   * **Code:** 401 UNAUTHORIZED <br />
     **Content:** `{ error : "Log in" }`
-
-  OR
-
-  * **Code:** 422 UNPROCESSABLE ENTRY <br />
-    **Content:** `{ error : "Email Invalid" }`
 
 * **Sample Call:**
 
