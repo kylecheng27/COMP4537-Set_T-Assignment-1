@@ -96,6 +96,8 @@ app.get("/pokemonsAdvancedFiltering", (req, res) => {
   .replace(/==/g, "$eq")
   .replace(/!=/g, "$nt")
   );
+
+
   
   ["HP<=20","Attack>30"]
   pokemonModel.find({"base.HP": {$lte: 20}, "base.Attack": {$gt: 30}}, (err, docs) => {
@@ -104,8 +106,10 @@ app.get("/pokemonsAdvancedFiltering", (req, res) => {
 
   
 });
+
 // MIDTERM Query push Operator
 app.patch("/pokemonsAdvancedUpdate", (req, res) => {
+  // {"id":"1","pushOperator":"[Electric, Water]"}
   let pokemonId = req.query["id"];
   let rawQueries = req.query["pushOperator"].split(",");
   let trimmedQueries = rawQueries.map(s => s.trim());
