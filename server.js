@@ -82,9 +82,35 @@ getPokemonDocs().then(([pokedex, pokemonType]) => {
 
 // Specify the API paths
 
-
 app.use(express.json());
 
+
+// MIDTERM Query Arithmetic Comparison Operators
+app.get("/pokemonsAdvancedFiltering", (req, res) => {
+  let rawQueries = req.query["comparisonOperators"].split(",");
+  let trimmedQueries = rawQueries.map(s => s.trim());
+  let regexedQueries = trimmedQueries.map(s => s.replace(/<=/g, "$lte")
+  .replace(/>/g, "$gt")
+  .replace(/</g, "$lt")
+  .replace(/>=/g, "$gte")
+  .replace(/==/g, "$eq")
+  .replace(/!=/g, "$nt")
+  );
+  res.send(regexedQueries);
+  
+  // ["HP<=20","Attack>30"]
+  // pokemonModel.find({"base.HP": {$lte: 20}, "base.Attack": {$gt: 30}}, (err, docs) => {
+  //   res.json(docs);
+  // });
+
+  
+});
+// MIDTERM Query push Operator
+app.patch("/pokemonsAdvancedUpdate", (req, res) => {
+  let pokemonId = req.query["id"];
+  let rawQueries = req.query["pushOperator"].split(",");
+  let trimmedQueries = rawQueries.map(s => s.trim());
+})
 
 // Get all the pokemons
 app.get('/api/assignment1/pokemons', (req, res) => {
