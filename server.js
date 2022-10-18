@@ -82,8 +82,11 @@ getPokemonDocs().then(([pokedex, pokemonType]) => {
 
 // Specify the API paths
 
-// Get all the pokemons
+
 app.use(express.json());
+
+
+// Get all the pokemons
 app.get('/api/assignment1/pokemons', (req, res) => {
   pokemonModel.find({}).skip(req.query.after).limit(req.query.count)
   .then(docs => {
