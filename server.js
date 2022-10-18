@@ -96,20 +96,11 @@ app.get("/pokemonsAdvancedFiltering", (req, res) => {
   .replace(/==/g, "$eq")
   .replace(/!=/g, "$nt")
   );
-<<<<<<< HEAD
   
   ["HP<=20","Attack>30"]
   pokemonModel.find({"base.HP": {$lte: 20}, "base.Attack": {$gt: 30}}, (err, docs) => {
     res.json(docs);
   });
-=======
-  res.send(regexedQueries);
-  
-  // ["HP<=20","Attack>30"]
-  // pokemonModel.find({"base.HP": {$lte: 20}, "base.Attack": {$gt: 30}}, (err, docs) => {
-  //   res.json(docs);
-  // });
->>>>>>> 9c755bbad5f9fd1259869584cd89790c0cdbb50c
 
   
 });
