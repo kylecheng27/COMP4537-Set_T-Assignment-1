@@ -1,9 +1,9 @@
 "use strict";
 
-const express = require('express');
+import express from 'express';
 const app = express();
-const axios = require('axios');
-const mongoose = require('mongoose');
+import axios from 'axios';
+import mongoose from 'mongoose';
 
 const pokedexJsonUrl = 'https://raw.githubusercontent.com/fanzeyi/pokemon.json/master/pokedex.json';
 const pokemonTypeJsonUrl = 'https://raw.githubusercontent.com/fanzeyi/pokemon.json/master/types.json';

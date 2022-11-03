@@ -10,6 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/kylecheng27/COMP4537-Set_T-Assignment-1.git"
   },
+  "type": "module",
   "author": "kyle",
   "license": "ISC",
   "bugs": {
