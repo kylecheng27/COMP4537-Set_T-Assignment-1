@@ -4,11 +4,12 @@ import express from 'express';
 const app = express();
 import axios from 'axios';
 import mongoose from 'mongoose';
+import { connectDB } from './connectDB.js';
 
 const pokedexJsonUrl = 'https://raw.githubusercontent.com/fanzeyi/pokemon.json/master/pokedex.json';
 const pokemonTypeJsonUrl = 'https://raw.githubusercontent.com/fanzeyi/pokemon.json/master/types.json';
 
-// Connect to the Db
+
 // Setup the schema
 const {Schema} = mongoose;
 const pokemonSchema = new Schema({
@@ -34,18 +35,11 @@ const pokemonSchema = new Schema({
 const collectionEntryName = 'pokemon'
 const pokemonModel = mongoose.model(collectionEntryName, pokemonSchema);
 
-// Connect to the Mongo Atlas db
-const mongoAtlasUsername = 'comp4537-assign1';
-const mongoAtlasPassword = 'ZfFIAV6yrxYgiGSb';
+
 const port = 5000;
 app.listen(process.env.PORT || port, async () => { // Process env port specified for hosting
-  try {
-    // await mongoose.connect('mongodb://localhost:27017/comp4537-lab4'); //name of my db
-    // mongodb atlas connection url -> mongodb+srv://username:password@cluster....
-    await mongoose.connect(`mongodb+srv://${mongoAtlasUsername}:${mongoAtlasPassword}@cluster0.3ewe01h.mongodb.net/pokedex?retryWrites=true&w=majority`); //mongodb atlas remote cluster
-} catch (error) {
-    console.log('db error');
-  }
+  // Connect to the Db
+  connectDB();
   console.log(`Example app listening on port ${port}`);
 });
 
