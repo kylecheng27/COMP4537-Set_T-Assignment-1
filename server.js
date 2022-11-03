@@ -2,80 +2,21 @@
 
 import express from 'express';
 const app = express();
-import axios from 'axios';
-import mongoose from 'mongoose';
 import { connectDB } from './connectDB.js';
+import { fillPokemonDB } from './fillPokemonDB.js';
 
-const pokedexJsonUrl = 'https://raw.githubusercontent.com/fanzeyi/pokemon.json/master/pokedex.json';
-const pokemonTypeJsonUrl = 'https://raw.githubusercontent.com/fanzeyi/pokemon.json/master/types.json';
-
-
-// Setup the schema
-const {Schema} = mongoose;
-const pokemonSchema = new Schema({
-    'base': {
-        'HP': Number,
-        'Attack': Number,
-        'Defense': Number,
-        'Speed': Number,
-        "Special Attack": Number,
-        "Special Defense": Number
-    },
-    'id': {type: Number, unique: true},
-    'name': {
-        'english': {type: String, maxLength: 20},
-        'japanese': String,
-        'chinese': String,
-        'french': String
-    },
-    'type': [String],
-});
-
-// create pokedex collection with the schema
-const collectionEntryName = 'pokemon'
-const pokemonModel = mongoose.model(collectionEntryName, pokemonSchema);
-
-
+let pokemonModel = null;
 const port = 5000;
 app.listen(process.env.PORT || port, async () => { // Process env port specified for hosting
   // Connect to the Db
-  connectDB();
+  await connectDB();
+  // Set up the Db and fill it
+  pokemonModel = fillPokemonDB();
   console.log(`Example app listening on port ${port}`);
 });
 
-// Get the Pokemon stuff from github repo
-async function getPokemonDocs() {
-    try {
-      const pokedexResponse = await axios.get(pokedexJsonUrl);
-      const pokemonTypeResponse = await axios.get(pokemonTypeJsonUrl);
-
-      let pokedex = pokedexResponse.data;
-      let pokemonType = pokemonTypeResponse.data;
-      
-      Object.keys(pokedex).forEach( key => {
-        pokedex[key].base["Special Attack"] = pokedex[key].base["Sp. Attack"];
-        pokedex[key].base["Special Defense"] = pokedex[key].base["Sp. Defense"];
-      });
-
-      return [pokedex, pokemonType];
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-// Insert Pokemon stuff into Atlas db on promise fulfilled
-// An async function returns a promise, access the promise to get the stuff
-// Within the promise, update Mongo Atlas db
-getPokemonDocs().then(([pokedex, pokemonType]) => {
-  
-  // Fill cloud db
-  pokemonModel.insertMany(pokedex, error => {
-    console.log(error);
-});
-}, error => console.log(error));
 
 // Specify the API paths
-
 app.use(express.json());
 
 
