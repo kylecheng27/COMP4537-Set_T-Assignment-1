@@ -4,6 +4,7 @@ import express from 'express';
 const app = express();
 import { connectDB } from './connectDB.js';
 import { fillPokemonDB } from './fillPokemonDB.js';
+import { errorHandler } from './errorHandler.js';
 
 let pokemonModel = null;
 const port = 5000;
@@ -58,8 +59,7 @@ app.get('/api/assignment1/pokemons', (req, res) => {
       res.json(docs);
   })
   .catch(err => {
-      console.error(err);
-      res.json({ msg: "fail to return all pokemons...  Check with server devs" });
+      res.json(errorHandler(err));      
   });
 });
 
