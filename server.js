@@ -2,9 +2,9 @@
 
 import express from 'express';
 const app = express();
-import { connectDB } from './connectDB.js';
-import { fillPokemonDB } from './fillPokemonDB.js';
-import { errorHandler } from './errorHandler.js';
+import { connectDB } from './connect-db.js';
+import { fillPokemonDB } from './fill-pokemon-db.js';
+import { errorHandler } from './error-handler.js';
 
 let pokemonModel = null;
 const port = 5000;
@@ -16,10 +16,18 @@ app.listen(process.env.PORT || port, async () => { // Process env port specified
   console.log(`Example app listening on port ${port}`);
 });
 
+const asyncWrapper = (fn) => {
+  return async (req, res, next) => {
+    try {
+      await fn(req, res, next)
+    } catch (error) {
+      next(error)
+    }
+  }
+};
 
 // Specify the API paths
 app.use(express.json());
-
 
 // MIDTERM Query Arithmetic Comparison Operators
 app.get("/pokemonsAdvancedFiltering", (req, res) => {
@@ -52,16 +60,17 @@ app.patch("/pokemonsAdvancedUpdate", (req, res) => {
 })
 
 // Get all the pokemons
-app.get('/api/assignment1/pokemons', (req, res) => {
+app.get('/api/assignment1/pokemons', asyncWrapper((req, res, next) => {
   pokemonModel.find({}).skip(req.query.after).limit(req.query.count)
   .then(docs => {
       console.log(docs);
       res.json(docs);
+      throw new Error('lololo')
   })
   .catch(err => {
-      res.json(errorHandler(err));      
+      next(err);      
   });
-});
+}));
 
 // Get a pokemon based on id
 app.get('/api/assignment1/pokemons/:id', (req, res) => {
@@ -131,4 +140,10 @@ app.put('/api/assignment1/pokemons/:id', (req, res) => {
     console.log(res);
   });
   res.send('Replacement successful!');
-})
+});
+
+// Trigger our error handler module
+app.use((err, req, res, next) => {
+  console.log("An error occurred!");
+  errorHandler(err, res);
+});
