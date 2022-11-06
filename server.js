@@ -4,7 +4,7 @@ import express from 'express';
 const app = express();
 import { connectDB } from './connect-db.js';
 import { fillPokemonDB } from './fill-pokemon-db.js';
-import { errorHandler } from './error-handler.js';
+import { errorHandler, InvalidURL, PokemonBadRequest } from './error-handler.js';
 
 let pokemonModel = null;
 const port = 5000;
@@ -65,7 +65,6 @@ app.get('/api/assignment1/pokemons', asyncWrapper((req, res, next) => {
   .then(docs => {
       console.log(docs);
       res.json(docs);
-      throw new Error('lololo')
   })
   .catch(err => {
       next(err);      
@@ -142,8 +141,16 @@ app.put('/api/assignment1/pokemons/:id', (req, res) => {
   res.send('Replacement successful!');
 });
 
+app.get("*", asyncWrapper((req, res, next) => {
+  try {
+    throw new InvalidURL;
+  } catch (error) {
+    next(error);
+  }
+  
+}));
+
 // Trigger our error handler module
 app.use((err, req, res, next) => {
-  console.log("An error occurred!");
   errorHandler(err, res);
 });

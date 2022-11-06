@@ -10,6 +10,13 @@ class Error {
 };
 */
 
+export class InvalidURL extends Error {
+  constructor() {
+    super("Endpoint does not exist! Please check spelling!");
+    this.name = "InvalidURL";
+  }
+};
+
 export class PokemonBadRequest extends Error {
   constructor(message) {
     super("Error! Bad Request! " + message);
@@ -29,13 +36,18 @@ export class PokemonBadRequestMissingID extends PokemonBadRequest {
  *
  */
 export const errorHandler = (err, res) => {
-  // console.log("err.name: ", err.name);
+  
+  let errorMsg = `${err.name} ${err.message}`;
+  
   if (err instanceof mongoose.Error.ValidationError) {
     return ({ errMsg: "ValidationError: check your ..." })
   } else if (err instanceof mongoose.Error.CastError) {
     return ({ errMsg: "CastError: check your ..." })
+  } else if (err instanceof InvalidURL) {
+    console.log(errorMsg)
+    res.status(404).send(errorMsg);
   } else {
-    console.log(err.name + " " + err.message);
+    console.log(errorMsg + " Ask devs to fix unaccounted error");
     // res.status(500).send(err.name + " " + err.message);
   }
 };
