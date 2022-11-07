@@ -73,12 +73,22 @@ app.get('/api/assignment1/pokemons', asyncWrapper((req, res, next) => {
 
 // Get a pokemon based on id
 app.get('/api/assignment1/pokemons/:id', asyncWrapper((req, res, next) => {
-  console.log(req.params.id);
-  pokemonModel.find({ id: req.params.id})
+  let pokemonId =  req.params.id;
+  console.log(pokemonId);
+
+  try {
+    if (!parseInt(pokemonId)) {
+    throw new PokemonNotFound(pokemonId);
+  }
+  } catch (error) {
+    next(error);
+  }
+
+  pokemonModel.find({ id: pokemonId})
       .then(doc => {
           
         if (!doc.length) {
-          throw new PokemonNotFound(req.params.id);
+          throw new PokemonNotFound(pokemonId);
         } else {
           console.log(doc);
           res.json(doc);
@@ -88,19 +98,6 @@ app.get('/api/assignment1/pokemons/:id', asyncWrapper((req, res, next) => {
         next(err);  
       });
 }));
-
-// Delete a pokemon
-app.delete('/api/assignment1/pokemons/:id', (req, res) => {
-  pokemonModel.deleteOne({ id: req.params.id }, (err, result) => {
-      if (err) {
-        console.log(err);
-        res.json({ msg: `pokemon with id ${req.params.id} does not exist...` });
-      }
-      console.log(result);
-    });
-  
-    res.send("Deleted successfully?");
-});
 
 // Add a new pokemon
 app.post('/api/assignment1/pokemons', (req, res) => {
@@ -114,6 +111,19 @@ app.post('/api/assignment1/pokemons', (req, res) => {
     res.json({ msg: `Invalid pokemon!` });
   }  
     res.json(req.body);
+});
+
+// Delete a pokemon
+app.delete('/api/assignment1/pokemons/:id', (req, res) => {
+  pokemonModel.deleteOne({ id: req.params.id }, (err, result) => {
+      if (err) {
+        console.log(err);
+        res.json({ msg: `pokemon with id ${req.params.id} does not exist...` });
+      }
+      console.log(result);
+    });
+  
+    res.send("Deleted successfully?");
 });
 
 // Modify a pokemon

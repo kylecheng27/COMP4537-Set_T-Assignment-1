@@ -56,9 +56,8 @@ export const errorHandler = (err, res) => {
   } else if (err instanceof PokemonNotFound) {
     console.log(errorMsg)
     res.status(404).send(errorMsg);
-  } else {
+  } else if (err instanceof CastError) {
     console.log(err);
-    res.status(500).send(errorMsg + " Ask devs to fix unaccounted error");
-    // res.status(500).send(err.name + " " + err.message);
+    res.status(500).send(errorMsg + " Ask devs to address unaccounted error");
   }
 };
