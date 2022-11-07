@@ -100,18 +100,17 @@ app.get('/api/assignment1/pokemons/:id', asyncWrapper((req, res, next) => {
 }));
 
 // Add a new pokemon
-app.post('/api/assignment1/pokemons', (req, res) => {
-  try {
-    pokemonModel.create(req.body, err => {
-      if (err) console.log(err);
-      // saved!
+app.post('/api/assignment1/pokemons', asyncWrapper((req, res, next) => {
+  
+  pokemonModel.create(req.body)
+    .then(doc => {
+      res.json(doc);
+    })
+    .catch(err => {
+      next(err);
     });
-  } catch (error) {
-    console.log(error);
-    res.json({ msg: `Invalid pokemon!` });
-  }  
-    res.json(req.body);
-});
+  
+}));
 
 // Delete a pokemon
 app.delete('/api/assignment1/pokemons/:id', (req, res) => {
@@ -149,14 +148,15 @@ app.put('/api/assignment1/pokemons/:id', (req, res) => {
   res.send('Replacement successful!');
 });
 
-app.get("*", asyncWrapper((req, res, next) => {
+// An endpoint to catch all invalid URL errors from any http method
+app.all("*", asyncWrapper((req, res, next) => {
   try {
     throw new InvalidURL;
   } catch (error) {
     next(error);
-  }
-  
+  }  
 }));
+
 
 // Trigger our error handler module
 app.use((err, req, res, next) => {

@@ -1,3 +1,4 @@
+import { MongoServerError } from 'mongodb';
 import { mongoose } from 'mongoose';
 
 /*
@@ -44,20 +45,20 @@ export class PokemonNotFound extends Error {
  */
 export const errorHandler = (err, res) => {
   
-  let errorMsg = `${err.name} ${err.message}`;
+  let errorMsg = `11${err.name} 22${err.message}`;
+  console.log(errorMsg);
   
   if (err instanceof mongoose.Error.ValidationError) {
-    return ({ errMsg: "ValidationError: check your ..." })
-  } else if (err instanceof mongoose.Error.CastError) {
-    return ({ errMsg: "CastError: check your ..." })
+    let preface = "DB validation failed. New pokemon violates schema rules. Note that all base statistics must be Numbers and the english name must not exceed 20 chars. Please see following message from database to fix the request --> ";
+    res.status(400).send(preface + errorMsg);
+  } else if (err instanceof MongoServerError) {
+    res.status(409).send("Pokemon already exists. Cannot add duplicate pokemons!");
   } else if (err instanceof InvalidURL) {
-    console.log(errorMsg)
     res.status(404).send(errorMsg);
   } else if (err instanceof PokemonNotFound) {
-    console.log(errorMsg)
     res.status(404).send(errorMsg);
-  } else if (err instanceof CastError) {
-    console.log(err);
+  } else {
+    console.log('we have an unnaccounted error!')
     res.status(500).send(errorMsg + " Ask devs to address unaccounted error");
   }
 };
