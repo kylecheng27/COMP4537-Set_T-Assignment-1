@@ -4,7 +4,7 @@ import express from 'express';
 const app = express();
 import { connectDB } from './connect-db.js';
 import { fillPokemonDB } from './fill-pokemon-db.js';
-import { errorHandler, InvalidURL, InvalidInputs, PokemonBadRequest, PokemonNotFound, PokemonNotFoundForRemoval } from './error-handler.js';
+import { errorHandler, InvalidURL, InvalidInputs, PokemonBadRequest, PokemonNotFound, PokemonNotFoundForRemoval, PokemonNotFoundForReplacement, PokemonNotFoundForUpdate } from './error-handler.js';
 import { json } from 'stream/consumers';
 
 let pokemonModel = null;
@@ -133,15 +133,32 @@ app.delete('/api/assignment1/pokemons/:id', asyncWrapper((req, res, next) => {
   
 }));
 
-app.put('/api/assignment1/pokemons/:id', (req, res) => {
-  pokemonModel.replaceOne({id: req.params.id }, req.body, (err, res) => {
-    // Updated at most one doc, `res.nModified` contains the number
-    // of docs that MongoDB updated
-    if (err) console.log(err);
-    console.log(res);
-  });
-  res.send('Replacement successful!');
-});
+// Replace a pokemon
+app.put('/api/assignment1/pokemons/:id', asyncWrapper((req, res, next) => {
+  
+  const selection = { id: req.params.id }
+  const replacement = req.body
+  const options = {
+    new: true,
+    runValidators: true,
+    overwrite: true
+  }
+
+  pokemonModel.findOneAndUpdate(selection, replacement, options, (err, doc) => {
+    try {
+      if (doc) {
+        res.send("Replaced successfully!");
+      } else if (err) {
+        throw new InvalidInputs;
+      } else {
+        throw new PokemonNotFoundForReplacement(req.params.id);
+      }
+    } catch (error) {
+      next(error);
+    }
+  }); 
+  
+}));
 
 // Modify a pokemon
 app.patch('/api/assignment1/pokemons/:id', asyncWrapper((req, res, next) => {
@@ -160,7 +177,7 @@ app.patch('/api/assignment1/pokemons/:id', asyncWrapper((req, res, next) => {
       } else if (err) {
         throw new InvalidInputs;
       } else {
-        throw new PokemonNotFound(req.params.id);
+        throw new PokemonNotFoundForUpdate(req.params.id);
       }
     } catch (error) {
       next(error);

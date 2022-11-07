@@ -46,6 +46,7 @@ export class PokemonNotFound extends Error {
   };
 };
 
+
 export class PokemonNotFoundForRemoval extends PokemonNotFound {
   constructor(invalidId) {
     super(invalidId, "Unable to Delete.");
@@ -53,13 +54,26 @@ export class PokemonNotFoundForRemoval extends PokemonNotFound {
   }
 }
 
+export class PokemonNotFoundForReplacement extends PokemonNotFound {
+  constructor(invalidId) {
+    super(invalidId, "Unable to Replace.");
+    this.name = "PokemonNotFoundForReplacement";
+  }
+}
+
+export class PokemonNotFoundForUpdate extends PokemonNotFound {
+  constructor(invalidId) {
+    super(invalidId, "Unable to Update.");
+    this.name = "PokemonNotFoundForUpdate";
+  }
+}
 /**
  * Accepts the Error object and Response object to be sent to client.
  *
  */
 export const errorHandler = (err, res) => {
   
-  let errorMsg = `11${err.name} 22${err.message}`;
+  let errorMsg = `${err.name} ${err.message}`;
   console.log(errorMsg);
   
   if (err instanceof mongoose.Error.ValidationError) {
