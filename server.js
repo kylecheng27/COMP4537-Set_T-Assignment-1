@@ -4,7 +4,7 @@ import express from 'express';
 const app = express();
 import { connectDB } from './connect-db.js';
 import { fillPokemonDB } from './fill-pokemon-db.js';
-import { errorHandler, InvalidURL, PokemonBadRequest } from './error-handler.js';
+import { errorHandler, InvalidURL, PokemonBadRequest, PokemonNotFound } from './error-handler.js';
 
 let pokemonModel = null;
 const port = 5000;
@@ -72,24 +72,22 @@ app.get('/api/assignment1/pokemons', asyncWrapper((req, res, next) => {
 }));
 
 // Get a pokemon based on id
-app.get('/api/assignment1/pokemons/:id', (req, res) => {
+app.get('/api/assignment1/pokemons/:id', asyncWrapper((req, res, next) => {
   console.log(req.params.id);
   pokemonModel.find({ id: req.params.id})
       .then(doc => {
           
         if (!doc.length) {
-          res.json({ msg: `pokemon with id ${req.params.id} does not exist...` });
+          throw new PokemonNotFound(req.params.id);
         } else {
           console.log(doc);
           res.json(doc);
         }
-        
       })
       .catch(err => {
-          console.error(err);
-          res.json({ msg: `db error...  Check with server devs` });
+        next(err);  
       });
-});
+}));
 
 // Delete a pokemon
 app.delete('/api/assignment1/pokemons/:id', (req, res) => {

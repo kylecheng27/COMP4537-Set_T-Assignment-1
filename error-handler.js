@@ -31,6 +31,13 @@ export class PokemonBadRequestMissingID extends PokemonBadRequest {
   }
 };
 
+export class PokemonNotFound extends Error {
+  constructor(invalidId) {
+    super(`No Pokemon exists where the id is ${invalidId}`);
+    this.name = "PokemonNotFound";
+  };
+};
+
 /**
  * Accepts the Error object and Response object to be sent to client.
  *
@@ -46,8 +53,12 @@ export const errorHandler = (err, res) => {
   } else if (err instanceof InvalidURL) {
     console.log(errorMsg)
     res.status(404).send(errorMsg);
+  } else if (err instanceof PokemonNotFound) {
+    console.log(errorMsg)
+    res.status(404).send(errorMsg);
   } else {
-    console.log(errorMsg + " Ask devs to fix unaccounted error");
+    console.log(err);
+    res.status(500).send(errorMsg + " Ask devs to fix unaccounted error");
     // res.status(500).send(err.name + " " + err.message);
   }
 };
