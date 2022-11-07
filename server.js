@@ -4,7 +4,7 @@ import express from 'express';
 const app = express();
 import { connectDB } from './connect-db.js';
 import { fillPokemonDB } from './fill-pokemon-db.js';
-import { errorHandler, InvalidURL, PokemonBadRequest, PokemonNotFound } from './error-handler.js';
+import { errorHandler, InvalidURL, PokemonBadRequest, PokemonNotFound, PokemonNotFoundForRemoval } from './error-handler.js';
 
 let pokemonModel = null;
 const port = 5000;
@@ -113,17 +113,26 @@ app.post('/api/assignment1/pokemons', asyncWrapper((req, res, next) => {
 }));
 
 // Delete a pokemon
-app.delete('/api/assignment1/pokemons/:id', (req, res) => {
-  pokemonModel.deleteOne({ id: req.params.id }, (err, result) => {
-      if (err) {
-        console.log(err);
-        res.json({ msg: `pokemon with id ${req.params.id} does not exist...` });
-      }
-      console.log(result);
-    });
+app.delete('/api/assignment1/pokemons/:id', asyncWrapper((req, res, next) => {
+
+  pokemonModel.findOneAndDelete({ id: req.params.id }, function (error, doc) {
+  console.log('second lauer');
   
-    res.send("Deleted successfully?");
-});
+  try {
+    if (doc) {
+    res.send(`Successfully deleted pokemon with id ${req.params.id}`);
+  } else if (error) {
+    console.log('This ran1');
+    next(error);
+  } else {
+    throw new PokemonNotFoundForRemoval(req.params.id);
+  }
+  } catch (error) {
+    next(error);
+  }  
+  });  
+  
+}));
 
 // Modify a pokemon
 app.patch('/api/assignment1/pokemons/:id', (req, res) => {

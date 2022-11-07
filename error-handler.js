@@ -33,11 +33,18 @@ export class PokemonBadRequestMissingID extends PokemonBadRequest {
 };
 
 export class PokemonNotFound extends Error {
-  constructor(invalidId) {
-    super(`No Pokemon exists where the id is ${invalidId}`);
+  constructor(invalidId, extraMsg="") {
+    super(`No Pokemon exists where the id is ${invalidId}. ${extraMsg}`);
     this.name = "PokemonNotFound";
   };
 };
+
+export class PokemonNotFoundForRemoval extends PokemonNotFound {
+  constructor(invalidId) {
+    super(invalidId, "Unable to Delete.");
+    this.name = "PokemonNotFoundForRemoval";
+  }
+}
 
 /**
  * Accepts the Error object and Response object to be sent to client.
