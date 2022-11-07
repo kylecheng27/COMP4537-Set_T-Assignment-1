@@ -18,6 +18,13 @@ export class InvalidURL extends Error {
   }
 };
 
+export class InvalidInputs extends Error {
+  constructor() {
+    super("Inputs violate schema rules. Pokemon base values must be a Number and the English name must not exceed 20 chars.");
+    this.name ="InvalidInputs";
+  }
+}
+
 export class PokemonBadRequest extends Error {
   constructor(message) {
     super("Error! Bad Request! " + message);
@@ -62,6 +69,8 @@ export const errorHandler = (err, res) => {
     res.status(409).send("Pokemon already exists. Cannot add duplicate pokemons!");
   } else if (err instanceof InvalidURL) {
     res.status(404).send(errorMsg);
+  } else if (err instanceof InvalidInputs) {
+    res.status(400).send(errorMsg);
   } else if (err instanceof PokemonNotFound) {
     res.status(404).send(errorMsg);
   } else {
