@@ -5,16 +5,20 @@ const app = express();
 import { connectDB } from './connect-db.js';
 import { fillPokemonDB } from './fill-pokemon-db.js';
 import { errorHandler, InvalidURL, InvalidInputs, PokemonBadRequest, PokemonNotFound, PokemonNotFoundForRemoval, PokemonNotFoundForReplacement, PokemonNotFoundForUpdate } from './error-handler.js';
-import { json } from 'stream/consumers';
+
+import dotenv from 'dotenv';
+dotenv.config();
+
+import crypto from 'crypto';
+const secret = crypto.randomBytes(64).toString("hex");
 
 let pokemonModel = null;
-const port = 5000;
-app.listen(process.env.PORT || port, async () => { // Process env port specified for hosting
+app.listen(process.env.PORT, async () => { // Process env port specified for hosting
   // Connect to the Db
   await connectDB();
   // Set up the Db and fill it
   pokemonModel = fillPokemonDB();
-  console.log(`Example app listening on port ${port}`);
+  console.log(`Example app listening on port ${process.env.PORT}`);
 });
 
 const asyncWrapper = (fn) => {
