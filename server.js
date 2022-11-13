@@ -5,6 +5,7 @@ const app = express();
 import { connectDB } from './connect-db.js';
 import { fillPokemonDB } from './fill-pokemon-db.js';
 import { errorHandler, InvalidURL, InvalidInputs, PokemonBadRequest, PokemonNotFound, PokemonNotFoundForRemoval, PokemonNotFoundForReplacement, PokemonNotFoundForUpdate } from './error-handler.js';
+import { setupUserLoginDB } from './user-login-db-setup.js';
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -12,12 +13,14 @@ dotenv.config();
 import crypto from 'crypto';
 const secret = crypto.randomBytes(64).toString("hex");
 
+let userLoginModel = null;
 let pokemonModel = null;
 app.listen(process.env.PORT, async () => { // Process env port specified for hosting
   // Connect to the Db
   await connectDB();
-  // Set up the Db and fill it
+  // Set up the Db's, fill if applicable
   pokemonModel = fillPokemonDB();
+  userLoginModel = setupUserLoginDB();
   console.log(`Example app listening on port ${process.env.PORT}`);
 });
 
@@ -33,6 +36,12 @@ const asyncWrapper = (fn) => {
 
 // Specify the API paths
 app.use(express.json());
+
+app.post('/register', asyncWrapper(async (req, res, next) => {
+  const { username, password, email} = req.body;
+  const user = await userLoginModel.create({ username, password, email });
+  res.send(user);
+}));
 
 // MIDTERM Query Arithmetic Comparison Operators
 app.get("/pokemonsAdvancedFiltering", (req, res) => {
