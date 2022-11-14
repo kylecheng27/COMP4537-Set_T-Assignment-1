@@ -37,9 +37,13 @@ const asyncWrapper = (fn) => {
 // Specify the API paths
 app.use(express.json());
 
+// Lab 9 Registration
+import bcrypt from 'bcrypt';
 app.post('/register', asyncWrapper(async (req, res, next) => {
   const { username, password, email} = req.body;
-  const user = await userLoginModel.create({ username, password, email });
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
+  const user = await userLoginModel.create({ username, password: hashedPassword, email });
   res.send(user);
 }));
 
