@@ -10,8 +10,7 @@ import { setupUserLoginDB } from './user-login-db-setup.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
-import crypto from 'crypto';
-const secret = crypto.randomBytes(64).toString("hex");
+
 
 let userLoginModel = null;
 let pokemonModel = null;
@@ -37,7 +36,7 @@ const asyncWrapper = (fn) => {
 // Specify the API paths
 app.use(express.json());
 
-// Lab 9 Registration
+// Lab 9 Registration and hashing
 import bcrypt from 'bcrypt';
 app.post('/register', asyncWrapper(async (req, res, next) => {
   const { username, password, email} = req.body;
@@ -46,6 +45,43 @@ app.post('/register', asyncWrapper(async (req, res, next) => {
   const user = await userLoginModel.create({ username, password: hashedPassword, email });
   res.send(user);
 }));
+
+// Lab 9 Login route
+import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
+const secret = crypto.randomBytes(64).toString("hex");
+app.post('/login', asyncWrapper(async (req, res, next) => {
+  const { username, password } = req.body;
+  const user = await userLoginModel.findOne({ username: username });
+  if (!user) {
+    throw new PokemonBadRequest("User not found!");
+  }
+  const isPasswordCorrect = await bcrypt.compare(password, user.password);
+  if (!isPasswordCorrect) {
+    throw new PokemonBadRequest("Password incorrect");
+  }
+
+  // Create and assign a token
+  const token = jwt.sign({ _id: user._id }, secret)
+  res.header('auth-token', token);
+
+  res.send(user);
+}));
+
+// Lab 9 Authentication middleware to lock the other routes
+const authenticate = (req, res, next) => {
+  const token = req.header('auth-token'); // All subsequent requests' header must have auth-token key-value
+  if (!token) {
+    throw new PokemonBadRequest("Access denied! No token");
+  }
+  try {
+    const verified = jwt.verify(token, secret);
+    next();
+  } catch (error) {
+    throw new PokemonBadRequest("Access denied! Invalid token");
+  }
+}
+app.use(authenticate);
 
 // MIDTERM Query Arithmetic Comparison Operators
 app.get("/pokemonsAdvancedFiltering", (req, res) => {

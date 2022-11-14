@@ -85,6 +85,8 @@ export const errorHandler = (err, res) => {
     res.status(404).send(errorMsg);
   } else if (err instanceof InvalidInputs) {
     res.status(400).send(errorMsg);
+  } else if (err instanceof PokemonBadRequest) {
+    res.status(404).send(errorMsg);
   } else if (err instanceof PokemonNotFound) {
     res.status(404).send(errorMsg);
   } else {
